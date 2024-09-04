@@ -1,4 +1,3 @@
 streamlit
 tensorflow
 Pillow  # Pour le traitement d'images
-matplotlib
