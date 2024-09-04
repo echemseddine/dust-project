@@ -58,7 +58,7 @@ def draw_divisions_and_labels(image):
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
     label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
-    font_size = 60  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
+    font_size = 80  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
 
     # Charger une police TrueType pour les étiquettes directionnelles
     try:
