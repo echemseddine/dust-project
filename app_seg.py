@@ -58,7 +58,13 @@ def draw_divisions_and_labels(image):
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
     label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
-    font_size = 20
+    font_size = 40  # Taille de la police pour les étiquettes directionnelles
+
+    # Charger une police TrueType pour les étiquettes directionnelles
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except IOError:
+        font = ImageFont.load_default()
 
     # Dessiner les lignes de séparation
     for i in range(1, 3):
@@ -78,7 +84,9 @@ def draw_divisions_and_labels(image):
             direction = directions[i][j]
             x = j * segment_width + segment_width // 2
             y = i * segment_height + segment_height // 2
-            draw.text((x, y), direction, fill=label_color, anchor="mm", font=None)
+            text_width, text_height = draw.textsize(direction, font=font)
+            # Dessiner le texte avec centrage
+            draw.text((x - text_width / 2, y - text_height / 2), direction, fill=label_color, font=font)
 
     return image
 
