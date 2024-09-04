@@ -135,7 +135,7 @@ if uploaded_file is not None:
                 html += f'<div style="position: relative; width: 100%; height: 100%;">'
                 html += f'<span style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; '
                 html += f'display: flex; align-items: center; justify-content: center; '
-                html += f'color: black; font-size: 24px;">{direction}</span>'
+                html += f'color: black; font-size: 15px;">{direction}</span>'
                 html += '</div></td>'
             html += '</tr>'
         html += '</table>'
