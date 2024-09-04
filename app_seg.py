@@ -58,7 +58,7 @@ def draw_divisions_and_labels(image):
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
     label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
-    font_size = 100  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
+    font_size = 200  # Augmenter la taille de la police pour meilleure visibilité
 
     # Charger une police TrueType pour les étiquettes directionnelles
     try:
@@ -69,9 +69,9 @@ def draw_divisions_and_labels(image):
     # Dessiner les lignes de séparation
     for i in range(1, 3):
         # Lignes verticales
-        draw.line([(i * segment_width, 0), (i * segment_width, height)], fill=line_color, width=3)
+        draw.line([(i * segment_width, 0), (i * segment_width, height)], fill=line_color, width=5)
         # Lignes horizontales
-        draw.line([(0, i * segment_height), (width, i * segment_height)], fill=line_color, width=3)
+        draw.line([(0, i * segment_height), (width, i * segment_height)], fill=line_color, width=5)
     
     # Ajouter les étiquettes directionnelles
     directions = [
@@ -127,7 +127,7 @@ if uploaded_file is not None:
                 bg_color = '#ff00ff' if dust_probabilities[i, j] == 'with_dust' else '#ffffff'
                 cell_style = (
                     f'border: 1px solid black; padding: 10px; text-align: center; '
-                    f'background-color: {bg_color}; height: 100px; width: 100px;'
+                    f'background-color: {bg_color}; height: 150px; width: 150px;'
                 )
                 # Construire le contenu de la cellule avec le label directionnel
                 direction = directions[i][j]
