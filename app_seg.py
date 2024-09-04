@@ -1,5 +1,5 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import tensorflow as tf
 
@@ -16,6 +16,7 @@ def segment_image(image):
     segment_width = width // 3
     segment_height = height // 3
     segments = []
+    
     for i in range(3):
         row_segments = []
         for j in range(3):
@@ -26,12 +27,15 @@ def segment_image(image):
             segment = image.crop((left, upper, right, lower))
             row_segments.append(segment)
         segments.append(row_segments)
+    
     return segments
 
 # Fonction pour prédire les probabilités de poussière sur chaque segment
 def predict_dust_probability(model, image):
     segments = segment_image(image)
+    
     labels = np.empty((3, 3), dtype=object)
+    
     for i in range(3):
         for j in range(3):
             segment = segments[i][j]
@@ -41,7 +45,42 @@ def predict_dust_probability(model, image):
             segment_array = np.expand_dims(segment_array, axis=0)
             prob = model.predict(segment_array)[0][0]
             labels[i, j] = 'with_dust' if prob >= 0.5 else 'without_dust'
+    
     return labels
+
+# Fonction pour dessiner les lignes et ajouter des étiquettes directionnelles
+def draw_divisions_and_labels(image):
+    draw = ImageDraw.Draw(image)
+    width, height = image.size
+    segment_width = width // 3
+    segment_height = height // 3
+
+    # Couleur des lignes de division
+    line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
+    label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
+    font_size = 20
+
+    # Dessiner les lignes de séparation
+    for i in range(1, 3):
+        # Lignes verticales
+        draw.line([(i * segment_width, 0), (i * segment_width, height)], fill=line_color, width=2)
+        # Lignes horizontales
+        draw.line([(0, i * segment_height), (width, i * segment_height)], fill=line_color, width=2)
+    
+    # Ajouter les étiquettes directionnelles
+    directions = [
+        ['NW', 'N', 'NE'],
+        ['W', 'C', 'E'],
+        ['SW', 'S', 'SE']
+    ]
+    for i in range(3):
+        for j in range(3):
+            direction = directions[i][j]
+            x = j * segment_width + segment_width // 2
+            y = i * segment_height + segment_height // 2
+            draw.text((x, y), direction, fill=label_color, anchor="mm", font=None)
+
+    return image
 
 # Titre de l'application
 st.title("Détection de Dust avec Deep Learning")
@@ -54,6 +93,9 @@ if uploaded_file is not None:
         # Ouvrir l'image avec PIL
         image = Image.open(uploaded_file)
         st.image(image, caption="Image chargée avec succès", use_column_width=True)
+        
+        # Dessiner les lignes et ajouter les étiquettes directionnelles
+        image_with_labels = draw_divisions_and_labels(image.copy())
 
         # Faire une prédiction en utilisant la fonction segmentée
         dust_probabilities = predict_dust_probability(model, image)
@@ -95,6 +137,9 @@ if uploaded_file is not None:
         </div>
         '''
         html += legend_html
+
+        # Afficher l'image avec les étiquettes directionnelles
+        st.image(image_with_labels, caption="Image avec divisions et étiquettes", use_column_width=True)
 
         # Afficher le tableau HTML
         st.markdown(html, unsafe_allow_html=True)
