@@ -84,7 +84,10 @@ def draw_divisions_and_labels(image):
             direction = directions[i][j]
             x = j * segment_width + segment_width // 2
             y = i * segment_height + segment_height // 2
-            text_width, text_height = draw.textsize(direction, font=font)
+            # Calculer la taille du texte
+            bbox = draw.textbbox((0, 0), direction, font=font)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
             # Dessiner le texte avec centrage
             draw.text((x - text_width / 2, y - text_height / 2), direction, fill=label_color, font=font)
 
