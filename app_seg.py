@@ -92,15 +92,13 @@ if uploaded_file is not None:
                     f'border: 1px solid black; padding: 10px; text-align: center; '
                     f'background-color: {bg_color}; height: 100px; width: 100px;'
                 )
-                # Construire le contenu de la cellule avec le label directionnel et la prédiction
+                # Construire le contenu de la cellule avec le label directionnel
                 direction = directions[i][j]
                 html += f'<td style="{cell_style}">'
                 html += f'<div style="position: relative; width: 100%; height: 100%;">'
                 html += f'<span style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; '
                 html += f'display: flex; align-items: center; justify-content: center; '
-                html += f'color: gray; font-size: 14px;">{direction}</span>'
-                html += f'<span style="position: relative; z-index: 1; display: flex; align-items: center; '
-                html += f'justify-content: center; height: 100%;"></span>'
+                html += f'color: black; font-size: 14px;">{direction}</span>'
                 html += '</div></td>'
             html += '</tr>'
         html += '</table>'
