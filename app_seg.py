@@ -78,13 +78,23 @@ if uploaded_file is not None:
         labels_df = pd.DataFrame(dust_probabilities, columns=['NW', 'N', 'NE'], index=['W', 'C', 'E'])
 
         # Générer le HTML pour afficher le tableau avec des arrière-plans directionnels
-        html = '<table style="border-collapse: collapse;">'
-        for i in range(3):
+        html = '<table style="border-collapse: collapse; width: 100%;">'
+        for i, row_label in enumerate(['W', 'C', 'E']):
             html += '<tr>'
-            for j in range(3):
-                # Définir l'arrière-plan de la cellule avec la direction
-                direction = ['NW', 'N', 'NE'][j] if i == 0 else ['W', 'C', 'E'][i] if j == 1 else ''
-                html += f'<td style="border: 1px solid black; padding: 10px; background-color: #f0f0f0; text-align: center;">{labels_df.iloc[i, j]}<br><span style="font-size: 12px; color: gray;">{direction}</span></td>'
+            for j, col_label in enumerate(['NW', 'N', 'NE']):
+                # Style pour la cellule
+                cell_style = (
+                    f'border: 1px solid black; padding: 10px; text-align: center; '
+                    f'background-color: #f0f0f0;'
+                )
+                # Ajouter le label directionnel comme arrière-plan
+                cell_html = f'<div style="position: relative; width: 100%; height: 100%;">'
+                cell_html += f'<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; '
+                cell_html += f'display: flex; align-items: center; justify-content: center; '
+                cell_html += f'color: gray; font-size: 12px;">{col_label if i == 0 else (row_label if j == 1 else "")}</div>'
+                cell_html += f'<div style="position: relative; z-index: 1;">{labels_df.iloc[i, j]}</div>'
+                cell_html += '</div>'
+                html += f'<td style="{cell_style}">{cell_html}</td>'
             html += '</tr>'
         html += '</table>'
 
