@@ -10,45 +10,49 @@ def load_model():
 
 model = load_model()
 
-# Fonction pour prétraiter l'image
-def preprocess_image(image):
-    try:
-        # Afficher la taille originale de l'image
-        original_size = image.size
-        st.write(f"Taille originale de l'image : {original_size}")
+# La fonction segment_image est déjà définie comme suit
+def segment_image(image):
+    """Segmenter une image en 9 sections égales et retourner une liste avec chaque section."""
+    width, height = image.size
+    segment_width = width // 3
+    segment_height = height // 3
+    segments = []
+    
+    for i in range(3):
+        row_segments = []
+        for j in range(3):
+            left = j * segment_width
+            upper = i * segment_height
+            right = (j + 1) * segment_width
+            lower = (i + 1) * segment_height
+            segment = image.crop((left, upper, right, lower))
+            row_segments.append(segment)
+        segments.append(row_segments)
+    
+    return segments
 
-        # Convertir l'image en RGB (supprimer le canal alpha si présent)
-        image = image.convert("RGB")
-        
-        # Redimensionner l'image à la taille d'entrée du modèle
-        image = image.resize((498, 498))  # Redimensionner à 498x498
-        image = np.array(image)  # Convertir l'image en tableau numpy
-        image = image / 255.0  # Normaliser l'image
-        image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
-        
-        # Afficher les dimensions pour déboguer
-        st.write(f"Dimensions après prétraitement : {image.shape}")
-
-        return image
-    except Exception as e:
-        st.error(f"Erreur lors du prétraitement de l'image : {e}")
-        return None
-
-# Fonction pour faire une prédiction
-def make_prediction(image, model):
-    processed_image = preprocess_image(image)
-    if processed_image is None:
-        return None
-    try:
-        # Afficher les dimensions de l'image traitée pour le débogage
-        st.write(f"Dimensions de l'image traitée : {processed_image.shape}")
-
-        # Faire une prédiction
-        prediction = model.predict(processed_image)
-        return prediction[0][0]  # Supposant que le modèle retourne une seule prédiction
-    except Exception as e:
-        st.error(f"Erreur lors de la prédiction : {e}")
-        return None
+# Fonction pour prédire les probabilités de poussière sur chaque segment
+def predict_dust_probability(model, image):
+    segments = segment_image(image)
+    
+    # Initialiser une matrice 3x3 pour les labels
+    labels = np.empty((3, 3), dtype=object)
+    
+    for i in range(3):
+        for j in range(3):
+            segment = segments[i][j]
+            segment = segment.resize((150, 150))  # Redimensionner si nécessaire
+            
+            segment_array = np.array(segment) / 255.0  # Normaliser l'image
+            segment_array = np.expand_dims(segment_array, axis=0)  # Ajouter une dimension pour le batch
+            
+            # Prédire la probabilité de poussière pour cette section
+            prob = model.predict(segment_array)[0][0]
+            
+            # Assigner un label basé sur le seuil de 0,5
+            labels[i, j] = 'with_dust' if prob >= 0.5 else 'without_dust'
+    
+    return labels
 
 # Titre de l'application
 st.title("Détection de Dust avec Deep Learning")
@@ -65,18 +69,12 @@ if uploaded_file is not None:
         # Afficher l'image téléchargée
         st.image(image, caption="Image chargée avec succès", use_column_width=True)
 
-        # Faire une prédiction
-        prediction = make_prediction(image, model)
+        # Faire une prédiction en utilisant la fonction segmentée
+        dust_probabilities = predict_dust_probability(model, image)
 
-        # Afficher le résultat
-        if prediction is not None:
-            st.write(f"Valeur de la prédiction : {prediction:.4f}")
-            if prediction > 0.5:
-                st.write("Résultat : Pas de dust détecté.")
-            else:
-                st.write("Résultat : Dust détecté.")
-        else:
-            st.write("Erreur lors de la prédiction.")
+        # Afficher le résultat sous forme de matrice 3x3
+        st.write("Matrice 3x3 des labels 'with_dust' ou 'without_dust':")
+        st.write(dust_probabilities)
     except Exception as e:
         st.error(f"Erreur lors du traitement de l'image : {e}")
 else:
