@@ -58,7 +58,7 @@ def draw_divisions_and_labels(image):
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
     label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
-    font_size = 140  # Taille de la police pour les étiquettes directionnelles
+    font_size = 60  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
 
     # Charger une police TrueType pour les étiquettes directionnelles
     try:
@@ -135,7 +135,7 @@ if uploaded_file is not None:
                 html += f'<div style="position: relative; width: 100%; height: 100%;">'
                 html += f'<span style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; '
                 html += f'display: flex; align-items: center; justify-content: center; '
-                html += f'color: black; font-size: 14px;">{direction}</span>'
+                html += f'color: black; font-size: 24px;">{direction}</span>'
                 html += '</div></td>'
             html += '</tr>'
         html += '</table>'
