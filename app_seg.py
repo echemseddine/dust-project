@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 
 # Charger le modèle TensorFlow .h5
 @st.cache_resource
@@ -73,9 +74,12 @@ if uploaded_file is not None:
         # Faire une prédiction en utilisant la fonction segmentée
         dust_probabilities = predict_dust_probability(model, image)
 
-        # Afficher le résultat sous forme de matrice 3x3
-        st.write("Matrice 3x3 des labels 'with_dust' ou 'without_dust':")
-        st.write(dust_probabilities)
+        # Créer un DataFrame pour les étiquettes directionnelles et les prédictions
+        labels_df = pd.DataFrame(dust_probabilities, columns=['Ouest', 'Centre', 'Est'], index=['Nord', 'Centre', 'Sud'])
+
+        # Afficher le résultat sous forme de tableau
+        st.write("Matrice 3x3 des labels avec les directions :")
+        st.dataframe(labels_df)
     except Exception as e:
         st.error(f"Erreur lors du traitement de l'image : {e}")
 else:
