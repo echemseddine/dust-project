@@ -10,7 +10,7 @@ def load_model():
 
 model = load_model()
 
-# La fonction segment_image est déjà définie comme suit
+# Fonction pour segmenter l'image en 9 parties égales
 def segment_image(image):
     """Segmenter une image en 9 sections égales et retourner une liste avec chaque section."""
     width, height = image.size
@@ -41,6 +41,7 @@ def predict_dust_probability(model, image):
     for i in range(3):
         for j in range(3):
             segment = segments[i][j]
+            segment = segment.convert('RGB')  # Convertir en RGB pour assurer 3 canaux
             segment = segment.resize((150, 150))  # Redimensionner si nécessaire
             
             segment_array = np.array(segment) / 255.0  # Normaliser l'image
