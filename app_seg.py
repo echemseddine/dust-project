@@ -83,7 +83,7 @@ def draw_divisions_and_labels(image):
     return image
 
 # Titre de l'application
-st.title("Détection de Dust avec Deep Learning")
+st.markdown("<h1 style='font-size: 2em; font-weight: bold;'>Détection de Dust avec Deep Learning</h1>", unsafe_allow_html=True)
 
 # Uploader pour charger une image
 uploaded_file = st.file_uploader("Choisissez une image...", type=["jpg", "jpeg", "png"])
