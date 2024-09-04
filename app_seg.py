@@ -74,12 +74,23 @@ if uploaded_file is not None:
         # Faire une prédiction en utilisant la fonction segmentée
         dust_probabilities = predict_dust_probability(model, image)
 
-        # Créer un DataFrame avec les étiquettes directionnelles spécifiques
+        # Créer un DataFrame avec les prédictions
         labels_df = pd.DataFrame(dust_probabilities, columns=['NW', 'N', 'NE'], index=['W', 'C', 'E'])
 
-        # Afficher le résultat sous forme de tableau
-        st.write("Matrice 3x3 des labels avec les directions :")
-        st.dataframe(labels_df)
+        # Générer le HTML pour afficher le tableau avec des arrière-plans directionnels
+        html = '<table style="border-collapse: collapse;">'
+        for i in range(3):
+            html += '<tr>'
+            for j in range(3):
+                # Définir l'arrière-plan de la cellule avec la direction
+                direction = ['NW', 'N', 'NE'][j] if i == 0 else ['W', 'C', 'E'][i] if j == 1 else ''
+                html += f'<td style="border: 1px solid black; padding: 10px; background-color: #f0f0f0; text-align: center;">{labels_df.iloc[i, j]}<br><span style="font-size: 12px; color: gray;">{direction}</span></td>'
+            html += '</tr>'
+        html += '</table>'
+
+        # Afficher le tableau HTML
+        st.markdown(html, unsafe_allow_html=True)
+
     except Exception as e:
         st.error(f"Erreur lors du traitement de l'image : {e}")
 else:
