@@ -58,7 +58,7 @@ def draw_divisions_and_labels(image):
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
     label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
-    font_size = 80  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
+    font_size = 100  # Taille de la police pour les étiquettes directionnelles (plus grande pour meilleure lisibilité)
 
     # Charger une police TrueType pour les étiquettes directionnelles
     try:
@@ -69,9 +69,9 @@ def draw_divisions_and_labels(image):
     # Dessiner les lignes de séparation
     for i in range(1, 3):
         # Lignes verticales
-        draw.line([(i * segment_width, 0), (i * segment_width, height)], fill=line_color, width=2)
+        draw.line([(i * segment_width, 0), (i * segment_width, height)], fill=line_color, width=3)
         # Lignes horizontales
-        draw.line([(0, i * segment_height), (width, i * segment_height)], fill=line_color, width=2)
+        draw.line([(0, i * segment_height), (width, i * segment_height)], fill=line_color, width=3)
     
     # Ajouter les étiquettes directionnelles
     directions = [
