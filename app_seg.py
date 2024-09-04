@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 # Charger le modèle TensorFlow .h5
 @st.cache_resource
@@ -55,28 +56,52 @@ def predict_dust_probability(model, image):
     
     return labels
 
+# Fonction pour calculer la proportion de segments avec de la poussière
+def calculate_dust_proportion(labels):
+    return np.sum(labels == 'with_dust') / labels.size
+
 # Titre de l'application
-st.title("Détection de Dust avec Deep Learning")
+st.title("Évolution de la détection de Dust avec Deep Learning")
 
-# Uploader pour charger une image
-uploaded_file = st.file_uploader("Choisissez une image...", type=["jpg", "jpeg", "png"])
+# Uploader pour charger plusieurs images
+uploaded_files = st.file_uploader("Choisissez des images...", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
 
-# Si un fichier est téléchargé
-if uploaded_file is not None:
-    try:
-        # Ouvrir l'image avec PIL
-        image = Image.open(uploaded_file)
+if uploaded_files:
+    dust_proportions = []
 
-        # Afficher l'image téléchargée
-        st.image(image, caption="Image chargée avec succès", use_column_width=True)
+    for uploaded_file in uploaded_files:
+        try:
+            # Ouvrir l'image avec PIL
+            image = Image.open(uploaded_file)
 
-        # Faire une prédiction en utilisant la fonction segmentée
-        dust_probabilities = predict_dust_probability(model, image)
+            # Afficher l'image téléchargée
+            st.image(image, caption=f"Image: {uploaded_file.name}", use_column_width=True)
 
-        # Afficher le résultat sous forme de matrice 3x3
-        st.write("Matrice 3x3 des labels 'with_dust' ou 'without_dust':")
-        st.write(dust_probabilities)
-    except Exception as e:
-        st.error(f"Erreur lors du traitement de l'image : {e}")
+            # Faire une prédiction en utilisant la fonction segmentée
+            dust_labels = predict_dust_probability(model, image)
+            
+            # Calculer la proportion de segments avec de la poussière
+            dust_proportion = calculate_dust_proportion(dust_labels)
+            dust_proportions.append(dust_proportion)
+            
+            # Afficher le résultat sous forme de matrice 3x3
+            st.write("Matrice 3x3 des labels 'with_dust' ou 'without_dust':")
+            st.write(dust_labels)
+            
+            st.write(f"Proportion de poussière dans cette image : {dust_proportion:.2%}")
+            
+        except Exception as e:
+            st.error(f"Erreur lors du traitement de l'image {uploaded_file.name} : {e}")
+    
+    # Afficher le graphe de l'évolution de la proportion de poussière
+    st.write("Évolution de la proportion de poussière dans les images téléchargées :")
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(dust_proportions) + 1), dust_proportions, marker='o')
+    plt.xlabel("Images")
+    plt.ylabel("Proportion de poussière (%)")
+    plt.title("Évolution de la proportion de poussière")
+    plt.grid(True)
+    st.pyplot(plt)
+
 else:
-    st.write("Veuillez télécharger une image pour obtenir une prédiction.")
+    st.write("Veuillez télécharger des images pour obtenir une prédiction.")
