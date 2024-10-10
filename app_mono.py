@@ -63,7 +63,7 @@ if uploaded_file is not None:
         image = Image.open(uploaded_file)
 
         # Afficher l'image téléchargée
-        st.image(image, caption="Image chargée avec succès", use_column_width=True)
+        st.image(image, caption="Image chargée avec succès222", use_column_width=True)
 
         # Faire une prédiction
         prediction = make_prediction(image, model)
