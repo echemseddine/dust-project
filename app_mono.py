@@ -20,8 +20,8 @@ def preprocess_image(image):
         # Convertir l'image en RGB (supprimer le canal alpha si présent)
         image = image.convert("RGB")
         
-        # Redimensionner l'image à la taille d'entrée du modèle
-        image = image.resize((498, 498))  # Redimensionner à 498x498
+        # Redimensionner l'image à la taille d'entrée du modèle (150x150)
+        image = image.resize((150, 150))  # Redimensionner à 150x150
         image = np.array(image)  # Convertir l'image en tableau numpy
         image = image / 255.0  # Normaliser l'image
         image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
@@ -76,7 +76,7 @@ if uploaded_file is not None:
             else:
                 st.write("Résultat : Pas de dust détecté.")
         else:
-            st.write("Erreur lors de la prédiction777.")
+            st.write("Erreur lors de la prédiction.")
     except Exception as e:
         st.error(f"Erreur lors du traitement de l'image : {e}")
 else:
