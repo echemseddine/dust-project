@@ -6,29 +6,33 @@ import tensorflow as tf
 # Charger le modèle TensorFlow .h5
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("best_model_seg.h5")
+    return tf.keras.models.load_model("model_classification_dust.h5")
 
 model = load_model()
 
 # Fonction pour prétraiter l'image
 def preprocess_image(image):
     try:
-        st.write(f"Taille originale de l'image : {image.size}")
+        # Afficher la taille originale de l'image
+        original_size = image.size
+        st.write(f"Taille originale de l'image : {original_size}")
+
+        # Convertir l'image en RGB (supprimer le canal alpha si présent)
         image = image.convert("RGB")
-        image = image.resize((498, 498))  # Assurez-vous que cela correspond à la taille attendue par le modèle
-        image = np.array(image) / 255.0
+        
+        # Redimensionner l'image à la taille d'entrée du modèle
+        image = image.resize((498, 498))  # Redimensionner à 498x498
+        image = np.array(image)  # Convertir l'image en tableau numpy
+        image = image / 255.0  # Normaliser l'image
         image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
         
-        # Aplatir l'image si le modèle s'attend à une entrée aplatie
-        # Si le modèle a besoin de l'image aplatie avant la couche dense
-        image = image.reshape(1, -1)  
-        
+        # Afficher les dimensions pour déboguer
         st.write(f"Dimensions après prétraitement : {image.shape}")
+
         return image
     except Exception as e:
         st.error(f"Erreur lors du prétraitement de l'image : {e}")
         return None
-
 
 # Fonction pour faire une prédiction
 def make_prediction(image, model):
@@ -68,9 +72,9 @@ if uploaded_file is not None:
         if prediction is not None:
             st.write(f"Valeur de la prédiction : {prediction:.4f}")
             if prediction > 0.5:
-                st.write("Résultat : Dust détecté.")
-            else:
                 st.write("Résultat : Pas de dust détecté.")
+            else:
+                st.write("Résultat : Dust détecté.")
         else:
             st.write("Erreur lors de la prédiction.")
     except Exception as e:
