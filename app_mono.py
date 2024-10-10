@@ -20,8 +20,8 @@ def preprocess_image(image):
         # Convertir l'image en RGB (supprimer le canal alpha si présent)
         image = image.convert("RGB")
         
-        # Redimensionner l'image à la taille d'entrée du modèle (150x150)
-        image = image.resize((150, 150))  # Redimensionner à 150x150
+        # Redimensionner l'image à la taille d'entrée du modèle
+        image = image.resize((498, 498))  # Redimensionner à 498x498
         image = np.array(image)  # Convertir l'image en tableau numpy
         image = image / 255.0  # Normaliser l'image
         image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
@@ -63,7 +63,7 @@ if uploaded_file is not None:
         image = Image.open(uploaded_file)
 
         # Afficher l'image téléchargée
-        st.image(image, caption="Image chargée avec succès222", use_column_width=True)
+        st.image(image, caption="Image chargée avec succès", use_column_width=True)
 
         # Faire une prédiction
         prediction = make_prediction(image, model)
