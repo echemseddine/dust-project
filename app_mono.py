@@ -6,7 +6,7 @@ import tensorflow as tf
 # Charger le modèle TensorFlow .h5
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("model_classification_dust.h5")
+    return tf.keras.models.load_model("best_model_seg.h5")
 
 model = load_model()
 
