@@ -13,26 +13,22 @@ model = load_model()
 # Fonction pour prétraiter l'image
 def preprocess_image(image):
     try:
-        # Afficher la taille originale de l'image
-        original_size = image.size
-        st.write(f"Taille originale de l'image : {original_size}")
-
-        # Convertir l'image en RGB (supprimer le canal alpha si présent)
+        st.write(f"Taille originale de l'image : {image.size}")
         image = image.convert("RGB")
-        
-        # Redimensionner l'image à la taille d'entrée du modèle
-        image = image.resize((498, 498))  # Redimensionner à 498x498
-        image = np.array(image)  # Convertir l'image en tableau numpy
-        image = image / 255.0  # Normaliser l'image
+        image = image.resize((498, 498))  # Assurez-vous que cela correspond à la taille attendue par le modèle
+        image = np.array(image) / 255.0
         image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
         
-        # Afficher les dimensions pour déboguer
+        # Aplatir l'image si le modèle s'attend à une entrée aplatie
+        # Si le modèle a besoin de l'image aplatie avant la couche dense
+        image = image.reshape(1, -1)  
+        
         st.write(f"Dimensions après prétraitement : {image.shape}")
-
         return image
     except Exception as e:
         st.error(f"Erreur lors du prétraitement de l'image : {e}")
         return None
+
 
 # Fonction pour faire une prédiction
 def make_prediction(image, model):
