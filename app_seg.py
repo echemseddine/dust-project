@@ -35,7 +35,8 @@ def predict_dust_probability(model, image):
     segments = segment_image(image)
     
     labels = np.empty((3, 3), dtype=object)
-    
+    probabilities = np.empty((3, 3), dtype=float)  # Pour stocker les probabilités
+
     for i in range(3):
         for j in range(3):
             segment = segments[i][j]
@@ -45,8 +46,9 @@ def predict_dust_probability(model, image):
             segment_array = np.expand_dims(segment_array, axis=0)
             prob = model.predict(segment_array)[0][0]
             labels[i, j] = 'with_dust' if prob >= 0.5 else 'without_dust'
+            probabilities[i, j] = prob * 100  # Convertir en pourcentage
     
-    return labels
+    return labels, probabilities
 
 # Fonction pour dessiner les lignes et ajouter des étiquettes directionnelles
 def draw_divisions_and_labels(image):
@@ -57,8 +59,8 @@ def draw_divisions_and_labels(image):
 
     # Couleur des lignes de division
     line_color = (255, 0, 0)  # Rouge pour les lignes de séparation
-    label_color = (0,0,0)  # Blanc pour les étiquettes directionnelles
-    font_size = 50  # Augmenter la taille de la police pour meilleure visibilité
+    label_color = (0, 0, 0)  # Noir pour les étiquettes directionnelles
+    font_size = 50  # Taille de la police
 
     # Charger une police TrueType pour les étiquettes directionnelles
     try:
@@ -84,11 +86,9 @@ def draw_divisions_and_labels(image):
             direction = directions[i][j]
             x = j * segment_width + segment_width // 2
             y = i * segment_height + segment_height // 2
-            # Calculer la taille du texte
             bbox = draw.textbbox((0, 0), direction, font=font)
             text_width = bbox[2] - bbox[0]
             text_height = bbox[3] - bbox[1]
-            # Dessiner le texte avec centrage
             draw.text((x - text_width / 2, y - text_height / 2), direction, fill=label_color, font=font)
 
     return image
@@ -109,7 +109,7 @@ if uploaded_file is not None:
         image_with_labels = draw_divisions_and_labels(image.copy())
 
         # Faire une prédiction en utilisant la fonction segmentée
-        dust_probabilities = predict_dust_probability(model, image)
+        dust_labels, dust_probabilities = predict_dust_probability(model, image)
 
         # Étiquettes directionnelles dans l'ordre spécifié
         directions = [
@@ -118,24 +118,25 @@ if uploaded_file is not None:
             ['SW', 'S', 'SE']
         ]
 
-        # Générer le HTML pour afficher le tableau avec des arrière-plans directionnels
+        # Générer le HTML pour afficher le tableau avec les pourcentages et les étiquettes directionnelles
         html = '<table style="border-collapse: collapse; width: 100%;">'
         for i in range(3):
             html += '<tr>'
             for j in range(3):
                 # Définir le style pour la cellule en fonction de la prédiction
-                bg_color = '#ff00ff' if dust_probabilities[i, j] == 'with_dust' else '#ffffff'
+                bg_color = '#ff00ff' if dust_labels[i, j] == 'with_dust' else '#ffffff'
                 cell_style = (
                     f'border: 1px solid black; padding: 10px; text-align: center; '
                     f'background-color: {bg_color}; height: 150px; width: 150px;'
                 )
-                # Construire le contenu de la cellule avec le label directionnel
+                # Construire le contenu de la cellule avec l'étiquette directionnelle et la probabilité
                 direction = directions[i][j]
+                prob = dust_probabilities[i, j]
                 html += f'<td style="{cell_style}">'
                 html += f'<div style="position: relative; width: 100%; height: 100%;">'
                 html += f'<span style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; '
                 html += f'display: flex; align-items: center; justify-content: center; '
-                html += f'color: black; font-size: 15px;">{direction}</span>'
+                html += f'color: black; font-size: 15px;">{direction} <br> {prob:.2f}%</span>'
                 html += '</div></td>'
             html += '</tr>'
         html += '</table>'
