@@ -6,7 +6,7 @@ import tensorflow as tf
 # Charger le modèle TensorFlow .h5
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model("best_model_seg.h5")
+    return tf.keras.models.load_model("model_classification_dust.h5")
 
 model = load_model()
 
@@ -20,8 +20,8 @@ def preprocess_image(image):
         # Convertir l'image en RGB (supprimer le canal alpha si présent)
         image = image.convert("RGB")
         
-        # Redimensionner l'image à la taille d'entrée du modèle (150x150)
-        image = image.resize((150, 150))  # Redimensionner à 150x150
+        # Redimensionner l'image à la taille d'entrée du modèle
+        image = image.resize((498, 498))  # Redimensionner à 498x498
         image = np.array(image)  # Convertir l'image en tableau numpy
         image = image / 255.0  # Normaliser l'image
         image = np.expand_dims(image, axis=0)  # Ajouter une dimension pour le batch
@@ -72,9 +72,9 @@ if uploaded_file is not None:
         if prediction is not None:
             st.write(f"Valeur de la prédiction : {prediction:.4f}")
             if prediction > 0.5:
-                st.write("Résultat : Dust détecté.")
-            else:
                 st.write("Résultat : Pas de dust détecté.")
+            else:
+                st.write("Résultat : Dust détecté.")
         else:
             st.write("Erreur lors de la prédiction.")
     except Exception as e:
