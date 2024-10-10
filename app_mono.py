@@ -76,7 +76,7 @@ if uploaded_file is not None:
             else:
                 st.write("Résultat : Pas de dust détecté.")
         else:
-            st.write("Erreur lors de la prédiction.")
+            st.write("Erreur lors de la prédiction777.")
     except Exception as e:
         st.error(f"Erreur lors du traitement de l'image : {e}")
 else:
