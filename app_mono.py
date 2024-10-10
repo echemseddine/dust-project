@@ -71,7 +71,7 @@ if uploaded_file is not None:
         # Afficher le résultat
         if prediction is not None:
             st.write(f"Valeur de la prédiction : {prediction:.4f}")
-            if prediction > 0.5:
+            if prediction < 0.5:
                 st.write("Résultat : Pas de dust détecté.")
             else:
                 st.write("Résultat : Dust détecté.")
